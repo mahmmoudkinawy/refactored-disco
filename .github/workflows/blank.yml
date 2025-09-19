@@ -1,0 +1,29 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build
+        run: dotnet build MyProject.sln
+
+      - name: Notify Success
+        if: success()
+        run: |
+          curl -X POST "http://144.91.75.57/message?token=Ac8LLl2C_hf07gs" \
+               -F "title=✅ Build Success" \
+               -F "message=GitHub Actions build finished successfully." \
+               -F "priority=5"
+
+      - name: Notify Failure
+        if: failure()
+        run: |
+          curl -X POST "http://144.91.75.57/message?token=Ac8LLl2C_hf07gs" \
+               -F "title=❌ Build Failed" \
+               -F "message=GitHub Actions build failed. Check logs." \
+               -F "priority=8"
